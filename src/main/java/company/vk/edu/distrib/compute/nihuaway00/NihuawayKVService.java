@@ -26,7 +26,9 @@ public class NihuawayKVService implements company.vk.edu.distrib.compute.KVServi
             registerContexts();
             server.start();
         } catch (Exception e) {
-            log.error(e.getMessage());
+            if (log.isErrorEnabled()) {
+                log.error(e.getMessage());
+            }
         }
     }
 
@@ -35,7 +37,9 @@ public class NihuawayKVService implements company.vk.edu.distrib.compute.KVServi
         if (server != null) {
             server.stop(0);
         } else {
-            log.warn("Server is not started");
+            if (log.isWarnEnabled()) {
+                log.warn("Server is not started");
+            }
         }
     }
 

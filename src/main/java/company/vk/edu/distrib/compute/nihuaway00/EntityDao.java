@@ -36,7 +36,7 @@ public class EntityDao implements Dao<byte[]> {
         try {
             return Files.readAllBytes(baseDir.resolve(key));
         } catch (NoSuchFileException e) {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("Entity is not found in storage", e);
         }
     }
 
@@ -64,6 +64,5 @@ public class EntityDao implements Dao<byte[]> {
     @Override
     public void close() throws IOException {
         // он тут не нужен, т.к. файлы закрываются после каждой операции
-        return;
     }
 }

@@ -10,7 +10,9 @@ public final class QueryUtils {
     }
 
     public static Map<String, String> parse(String query) {
-        if (query == null || query.isBlank()) return Map.of();
+        if (query == null || query.isBlank()) {
+            return Map.of();
+        }
 
         Map<String, String> result = new ConcurrentHashMap<>();
         for (String param : query.split("&")) {
