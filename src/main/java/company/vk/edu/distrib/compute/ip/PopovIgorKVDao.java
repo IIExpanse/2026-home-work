@@ -19,8 +19,11 @@ public class PopovIgorKVDao implements Dao<byte[]> {
     @Override
     public void upsert(String key, byte[] value) throws IOException {
         checkActive();
-        if (key == null || value == null) {
-            throw new IllegalArgumentException("Key or value cannot be null");
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null");
+        }
+        if (value == null) {
+            throw new IllegalArgumentException("Value cannot be null");
         }
         storage.put(key, value);
     }

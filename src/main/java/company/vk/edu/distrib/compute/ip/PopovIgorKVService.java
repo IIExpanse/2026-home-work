@@ -17,13 +17,14 @@ public class PopovIgorKVService implements KVService {
 
     private final HttpServer server;
     private final int port;
-    private final PopovIgorKVDao dao;
+    private final PopovIgorKVDaoPersistent dao;
     private final AtomicBoolean isRunning = new AtomicBoolean(false);
 
     public PopovIgorKVService(int port) {
         this.port = port;
         try {
-            this.dao = new PopovIgorKVDao();
+            this.dao = new PopovIgorKVDaoPersistent("data_" + port);
+            // this.dao = new PopovIgorKVDao(); // in mem
             this.server = HttpServer.create(new InetSocketAddress("localhost", this.port), 512);
             initServerContexts();
         } catch (IOException e) {
