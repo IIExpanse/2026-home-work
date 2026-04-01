@@ -36,9 +36,9 @@ public class PopovIgorKVDao implements Dao<byte[]> {
 
     @Override
     public void close() throws IOException {
-        if (active.compareAndSet(true, false)) {
-            storage.clear();
-        }
+        checkActive();
+        active.set(false);
+        storage.clear();
     }
 
     private void checkActive() throws IOException {

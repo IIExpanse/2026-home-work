@@ -12,25 +12,25 @@ public class PopovIgorKVDaoPersistent implements Dao<byte[]> {
     private final Path storageDir;
 
     public PopovIgorKVDaoPersistent(String dataPath) throws IOException {
-        this.storageDir = Paths.get(dataPath);
-        if (!Files.exists(this.storageDir)) {
-            Files.createDirectories(this.storageDir);
+        storageDir = Paths.get(dataPath);
+        if (!Files.exists(storageDir)) {
+            Files.createDirectories(storageDir);
         }
     }
 
     @Override
     public byte[] get(String key) throws IOException {
-        this.checkActive();
+        checkActive();
         if (key == null) {
             throw new IllegalArgumentException("Key cannot be null");
         }
-        final Path file = this.storageDir.resolve(Paths.get(key).getFileName().toString());
+        final Path file = storageDir.resolve(Paths.get(key).getFileName().toString());
         return Files.readAllBytes(file);
     }
 
     @Override
     public void upsert(String key, byte[] value) throws IOException {
-        this.checkActive();
+        checkActive();
         if (key == null) {
             throw new IllegalArgumentException("Key cannot be null");
         }
@@ -38,7 +38,7 @@ public class PopovIgorKVDaoPersistent implements Dao<byte[]> {
             throw new IllegalArgumentException("Value cannot be null");
         }
 
-        final Path file = this.storageDir.resolve(Paths.get(key).getFileName().toString());
+        final Path file = storageDir.resolve(Paths.get(key).getFileName().toString());
         Files.write(file, value);
     }
 
@@ -48,17 +48,18 @@ public class PopovIgorKVDaoPersistent implements Dao<byte[]> {
         if (key == null) {
             throw new IllegalArgumentException("Key cannot be null");
         }
-        final Path file = this.storageDir.resolve(Paths.get(key).getFileName().toString());
+        final Path file = storageDir.resolve(Paths.get(key).getFileName().toString());
         Files.deleteIfExists(file);
     }
 
     @Override
     public void close() throws IOException {
-        this.active.set(false);
+        checkActive();
+        active.set(false);
     }
 
     private void checkActive() throws IOException {
-        if (!this.active.get()) {
+        if (!active.get()) {
             throw new IOException("DAO is already closed");
         }
     }
