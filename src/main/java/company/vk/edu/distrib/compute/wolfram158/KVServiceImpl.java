@@ -97,7 +97,7 @@ public class KVServiceImpl implements KVService {
     private void handlePutEntity(
             final HttpExchange exchange,
             final Dao<byte[]> dao
-    ) {
+    ) throws IOException {
         try (exchange; InputStream is = exchange.getRequestBody()) {
             final Map<String, List<String>> queries = Utils.extractQueryParams(exchange.getRequestURI().getQuery());
             final List<String> values = queries.get(QueryParamConstants.ID);
@@ -107,8 +107,6 @@ public class KVServiceImpl implements KVService {
             }
             dao.upsert(values.getFirst(), is.readAllBytes());
             exchange.sendResponseHeaders(HttpURLConnection.HTTP_CREATED, -1);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
