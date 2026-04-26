@@ -46,7 +46,7 @@ public class EntityEndpointHandler implements HttpHandler {
 
         String key = params.get(ID);
 
-        if (KVShardingClusterImpl.getIsShardingEnabled()) {
+        if (KVShardingClusterImpl.isShardingEnabled()) {
             UUID targetUid = RendezvousHashing.getCorrespondingUid(key, KVShardingClusterImpl.getShardKeys());
 
             int port = exchange.getLocalAddress().getPort();

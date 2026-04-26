@@ -44,7 +44,7 @@ public class KVShardingClusterImpl implements KVCluster {
         endpointNodeMap = Map.copyOf(endpointNodeMap);
     }
 
-    public static boolean getIsShardingEnabled() {
+    public static boolean isShardingEnabled() {
         return isShardingEnabled;
     }
 
