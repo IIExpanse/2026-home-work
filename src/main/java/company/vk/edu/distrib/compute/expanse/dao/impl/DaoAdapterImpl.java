@@ -2,7 +2,7 @@ package company.vk.edu.distrib.compute.expanse.dao.impl;
 
 import company.vk.edu.distrib.compute.Dao;
 import company.vk.edu.distrib.compute.expanse.dao.DaoAdapter;
-import company.vk.edu.distrib.compute.expanse.exception.HttpEntityNotFoundException;
+import company.vk.edu.distrib.compute.expanse.exception.EntityNotFoundException;
 import company.vk.edu.distrib.compute.expanse.utils.ExceptionUtils;
 
 import java.io.IOException;
@@ -29,7 +29,7 @@ public class DaoAdapterImpl implements DaoAdapter<String, byte[]> {
             throw ExceptionUtils.wrapToInternal(e);
 
         } catch (NoSuchElementException e) {
-            throw new HttpEntityNotFoundException(getEntityNotFoundMessage(key), e);
+            throw new EntityNotFoundException(getEntityNotFoundMessage(key), e);
         }
     }
 

@@ -1,6 +1,6 @@
 package company.vk.edu.distrib.compute.expanse.validator;
 
-import company.vk.edu.distrib.compute.expanse.exception.HttpBadRequestException;
+import company.vk.edu.distrib.compute.expanse.exception.BadRequestException;
 import company.vk.edu.distrib.compute.expanse.exception.HttpMethodNotSupportedException;
 import company.vk.edu.distrib.compute.expanse.model.ApiSettings;
 
@@ -28,7 +28,7 @@ public final class HttpRequestValidatorUtils {
                 .collect(Collectors.toSet());
 
         if (!nonNullParamsKeys.containsAll(config.getRequiredParams())) {
-            throw new HttpBadRequestException("Missing one or more required query parameters");
+            throw new BadRequestException("Missing one or more required query parameters");
         }
     }
 }

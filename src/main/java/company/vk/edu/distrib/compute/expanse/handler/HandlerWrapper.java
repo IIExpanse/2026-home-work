@@ -2,7 +2,7 @@ package company.vk.edu.distrib.compute.expanse.handler;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import company.vk.edu.distrib.compute.expanse.exception.HttpRequestException;
+import company.vk.edu.distrib.compute.expanse.exception.RequestException;
 import company.vk.edu.distrib.compute.expanse.model.ApiSettings;
 import company.vk.edu.distrib.compute.expanse.validator.HttpRequestValidatorUtils;
 
@@ -23,14 +23,12 @@ public class HandlerWrapper implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        // codestyle чекер крайне настаивал на закрытии exchange не в блоке finally,
-        // что вынудило создать лишнюю вложенность, иначе он преждевременно закрывался.
         try (exchange) {
             try {
                 HttpRequestValidatorUtils.checkIsSupportedMethod(apiSettings, exchange.getRequestMethod());
                 handler.handle(exchange);
 
-            } catch (HttpRequestException e) {
+            } catch (RequestException e) {
                 handleErrorResponse(exchange, e.getCode(), e.getMessage());
 
             } catch (Exception e) {

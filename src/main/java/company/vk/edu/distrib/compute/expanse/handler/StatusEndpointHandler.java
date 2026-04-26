@@ -3,21 +3,21 @@ package company.vk.edu.distrib.compute.expanse.handler;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import company.vk.edu.distrib.compute.expanse.context.AppContextUtils;
-import company.vk.edu.distrib.compute.expanse.service.HttpService;
-import company.vk.edu.distrib.compute.expanse.service.impl.HttpServiceImpl;
+import company.vk.edu.distrib.compute.expanse.service.KVStorageService;
+import company.vk.edu.distrib.compute.expanse.service.impl.KVStorageServiceImpl;
 
 import java.io.IOException;
 
 public class StatusEndpointHandler implements HttpHandler {
-    private final HttpService<String, byte[]> httpService;
+    private final KVStorageService<String, byte[]> kvStorageService;
 
     public StatusEndpointHandler() {
-        this.httpService = AppContextUtils.getBean(HttpServiceImpl.class);
+        this.kvStorageService = AppContextUtils.getBean(KVStorageServiceImpl.class);
     }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        if (!httpService.isOkStatus()) {
+        if (!kvStorageService.isOkStatus()) {
             exchange.sendResponseHeaders(503, -1);
             return;
         }
