@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 public class EntityEndpointHandler implements HttpHandler {
     private static final Logger log = Logger.getLogger(EntityEndpointHandler.class.getName());
     private static final String ID = "id";
+    private static final int NOT_FOUND = 404;
 
     private final KVStorageService<String, byte[]> kvStorageService;
 
@@ -45,7 +46,7 @@ public class EntityEndpointHandler implements HttpHandler {
 
         String key = params.get(ID);
 
-        if (KVShardingClusterImpl.isShardingEnabled()) {
+        if (KVShardingClusterImpl.getIsShardingEnabled()) {
             UUID targetUid = RendezvousHashing.getCorrespondingUid(key, KVShardingClusterImpl.getShardKeys());
 
             int port = exchange.getLocalAddress().getPort();
@@ -106,7 +107,7 @@ public class EntityEndpointHandler implements HttpHandler {
 
             case "GET" -> {
                 GetEntityResponse response = GrpcClient.getEntity(key, grpcPort);
-                if (response.getCode() == 404) {
+                if (response.getCode() == NOT_FOUND) {
                     throw new EntityNotFoundException("Entity with id " + key + " not found.", null);
                 }
                 writeResponse(exchange, response.getResponse().toByteArray(), 200);

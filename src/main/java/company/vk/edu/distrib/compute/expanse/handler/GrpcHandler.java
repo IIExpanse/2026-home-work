@@ -34,12 +34,16 @@ public class GrpcHandler extends EntityServiceGrpc.EntityServiceImplBase {
             entity = kvStorageService.getEntityByID(request.getId());
 
         } catch (EntityNotFoundException e) {
-            LOGGER.info("Entity not found: {}", e.getMessage());
+            if (LOGGER.isInfoEnabled()) {
+                LOGGER.info("Entity not found: {}", e.getMessage());
+            }
             responseObserver.onError(new StatusRuntimeException(Status.NOT_FOUND));
             return;
 
         } catch (Exception e) {
-            LOGGER.error("Error while getting entity: {}", e.getMessage());
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("Error while getting entity: {}", e.getMessage());
+            }
             responseObserver.onError(new StatusRuntimeException(Status.INTERNAL));
             return;
         }
@@ -56,7 +60,9 @@ public class GrpcHandler extends EntityServiceGrpc.EntityServiceImplBase {
         try {
             kvStorageService.putEntity(request.getId(), request.getBody().toByteArray());
         } catch (Exception e) {
-            LOGGER.error("Error while putting entity: {}", e.getMessage());
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("Error while putting entity: {}", e.getMessage());
+            }
             responseObserver.onError(new StatusRuntimeException(Status.INTERNAL));
             return;
         }
@@ -73,7 +79,9 @@ public class GrpcHandler extends EntityServiceGrpc.EntityServiceImplBase {
             kvStorageService.deleteEntityByID(request.getId());
 
         } catch (Exception e) {
-            LOGGER.error("Error while deleting entity: {}", e.getMessage());
+            if (LOGGER.isErrorEnabled()) {
+                LOGGER.error("Error while deleting entity: {}", e.getMessage());
+            }
             responseObserver.onError(new StatusRuntimeException(Status.INTERNAL));
             return;
         }

@@ -1,6 +1,7 @@
 package company.vk.edu.distrib.compute.expanse.core;
 
 import company.vk.edu.distrib.compute.KVCluster;
+import company.vk.edu.distrib.compute.expanse.utils.ExceptionUtils;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ public class KVShardingClusterImpl implements KVCluster {
             try {
                 endpointNodeMap.put(endpoint, new Node(shardPort, shardPort + 1000));
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw ExceptionUtils.wrapToInternal(e);
             }
         });
         shardKeys = Set.copyOf(shardKeyEndpointMap.keySet());
@@ -43,7 +44,7 @@ public class KVShardingClusterImpl implements KVCluster {
         endpointNodeMap = Map.copyOf(endpointNodeMap);
     }
 
-    public static boolean isShardingEnabled() {
+    public static boolean getIsShardingEnabled() {
         return isShardingEnabled;
     }
 
@@ -69,7 +70,7 @@ public class KVShardingClusterImpl implements KVCluster {
             try {
                 node.start();
             } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                throw ExceptionUtils.wrapToInternal(ex);
             }
         });
     }
@@ -82,7 +83,7 @@ public class KVShardingClusterImpl implements KVCluster {
         try {
             endpointNodeMap.get(endpoint).start();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.wrapToInternal(e);
         }
     }
 

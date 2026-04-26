@@ -1,5 +1,7 @@
 package company.vk.edu.distrib.compute.expanse.algorithm;
 
+import company.vk.edu.distrib.compute.expanse.utils.ExceptionUtils;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -40,7 +42,7 @@ public final class RendezvousHashing {
                     | (digest[7] & 0xFF);
             return (double) value / Long.MAX_VALUE; // Нормализация к [0,1)
         } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.wrapToInternal(e);
         }
     }
 }

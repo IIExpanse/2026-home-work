@@ -34,6 +34,8 @@ public class HandlerWrapper implements HttpHandler {
             } catch (Exception e) {
                 handleErrorResponse(exchange, 500, e.getMessage());
             }
+        } finally {
+            exchange.close();
         }
 
     }
