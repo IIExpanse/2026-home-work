@@ -4,7 +4,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
-public class RendezvousHashing {
+public final class RendezvousHashing {
+    private RendezvousHashing() {
+
+    }
+
     public static UUID getCorrespondingUid(String key, Set<UUID> uuids) {
         if (uuids.isEmpty()) {
             return null;

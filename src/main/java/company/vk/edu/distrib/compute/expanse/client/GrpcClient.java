@@ -16,12 +16,12 @@ import io.grpc.StatusRuntimeException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class GrpcClient {
+public final class GrpcClient {
+    private static final Map<Integer, ManagedChannel> CHANNELS = new ConcurrentHashMap<>();
+
     private GrpcClient() {
 
     }
-
-    private static final Map<Integer, ManagedChannel> channels = new ConcurrentHashMap<>();
 
     public static GetEntityResponse getEntity(String entityId, int grpcPort) {
         try {
@@ -67,7 +67,7 @@ public class GrpcClient {
     }
 
     private static EntityServiceGrpc.EntityServiceBlockingStub build(int grpcPort) {
-        channels.putIfAbsent(grpcPort, ManagedChannelBuilder.forAddress("localhost", grpcPort).usePlaintext().build());
-        return EntityServiceGrpc.newBlockingStub(channels.get(grpcPort));
+        CHANNELS.putIfAbsent(grpcPort, ManagedChannelBuilder.forAddress("localhost", grpcPort).usePlaintext().build());
+        return EntityServiceGrpc.newBlockingStub(CHANNELS.get(grpcPort));
     }
 }

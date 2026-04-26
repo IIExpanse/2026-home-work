@@ -20,9 +20,10 @@ import org.slf4j.LoggerFactory;
 
 public class GrpcHandler extends EntityServiceGrpc.EntityServiceImplBase {
     private final KVStorageService<String, byte[]> kvStorageService;
-    private static final Logger logger = LoggerFactory.getLogger(GrpcHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GrpcHandler.class);
 
     public GrpcHandler() {
+        super();
         kvStorageService = AppContextUtils.getBean(KVStorageServiceImpl.class);
     }
 
@@ -33,12 +34,12 @@ public class GrpcHandler extends EntityServiceGrpc.EntityServiceImplBase {
             entity = kvStorageService.getEntityByID(request.getId());
 
         } catch (EntityNotFoundException e) {
-            logger.info("Entity not found: {}", e.getMessage());
+            LOGGER.info("Entity not found: {}", e.getMessage());
             responseObserver.onError(new StatusRuntimeException(Status.NOT_FOUND));
             return;
 
         } catch (Exception e) {
-            logger.error("Error while getting entity: {}", e.getMessage());
+            LOGGER.error("Error while getting entity: {}", e.getMessage());
             responseObserver.onError(new StatusRuntimeException(Status.INTERNAL));
             return;
         }
@@ -55,7 +56,7 @@ public class GrpcHandler extends EntityServiceGrpc.EntityServiceImplBase {
         try {
             kvStorageService.putEntity(request.getId(), request.getBody().toByteArray());
         } catch (Exception e) {
-            logger.error("Error while putting entity: {}", e.getMessage());
+            LOGGER.error("Error while putting entity: {}", e.getMessage());
             responseObserver.onError(new StatusRuntimeException(Status.INTERNAL));
             return;
         }
@@ -72,7 +73,7 @@ public class GrpcHandler extends EntityServiceGrpc.EntityServiceImplBase {
             kvStorageService.deleteEntityByID(request.getId());
 
         } catch (Exception e) {
-            logger.error("Error while deleting entity: {}", e.getMessage());
+            LOGGER.error("Error while deleting entity: {}", e.getMessage());
             responseObserver.onError(new StatusRuntimeException(Status.INTERNAL));
             return;
         }

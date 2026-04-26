@@ -14,7 +14,7 @@ public class KVShardingClusterImpl implements KVCluster {
     private static Map<UUID, String> shardKeyEndpointMap;
     private static Map<Integer, UUID> portShardKeyMap;
     private static Map<String, Node> endpointNodeMap;
-    private static boolean isShardingEnabled = false;
+    private static boolean isShardingEnabled;
 
     public KVShardingClusterImpl(int shardingFactor, List<Integer> ports) {
         if (ports.size() < shardingFactor) {
