@@ -70,7 +70,8 @@ public class AuditServiceImpl implements AuditService {
                                 log.info("Received record with offset " + consumerRecord.offset());
 
                                 dao.upsert(getPrefix() + consumerRecord.offset(), consumerRecord.value().getBytes());
-                            }                            if (log.isLoggable(Level.INFO)) {
+                            }
+                            if (log.isLoggable(Level.INFO)) {
                                 log.info("Consumed " + records.count() + " records");
                             }
                         }
