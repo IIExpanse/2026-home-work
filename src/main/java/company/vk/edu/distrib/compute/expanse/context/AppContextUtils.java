@@ -29,4 +29,8 @@ public final class AppContextUtils {
         CONTEXT.put(clazz.getSimpleName(), bean);
         return bean;
     }
+
+    public static <T> void addBean(T bean, Class<T> clazz) {
+        CONTEXT.put(clazz.getSimpleName(), bean);
+    }
 }

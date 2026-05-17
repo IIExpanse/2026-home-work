@@ -4,8 +4,11 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import company.vk.edu.distrib.compute.expanse.algorithm.RendezvousHashing;
 import company.vk.edu.distrib.compute.expanse.client.GrpcClient;
+import company.vk.edu.distrib.compute.expanse.core.AuditServiceImpl;
+import company.vk.edu.distrib.compute.expanse.core.AuditableKVServiceImpl;
 import company.vk.edu.distrib.compute.expanse.core.KVShardingClusterImpl;
 import company.vk.edu.distrib.compute.expanse.context.AppContextUtils;
+import company.vk.edu.distrib.compute.expanse.dao.impl.FileStorageDao;
 import company.vk.edu.distrib.compute.expanse.dto.proto.GetEntityResponse;
 import company.vk.edu.distrib.compute.expanse.exception.EntityNotFoundException;
 import company.vk.edu.distrib.compute.expanse.model.ApiSettings;
@@ -17,6 +20,7 @@ import company.vk.edu.distrib.compute.expanse.validator.HttpRequestValidatorUtil
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -28,6 +32,7 @@ public class EntityEndpointHandler implements HttpHandler {
     private static final int NOT_FOUND = 404;
 
     private final KVStorageService<String, byte[]> kvStorageService;
+    private AuditableKVServiceImpl auditableKVService;
 
     public EntityEndpointHandler() {
         this.kvStorageService = AppContextUtils.getBean(KVStorageServiceImpl.class);
@@ -45,6 +50,15 @@ public class EntityEndpointHandler implements HttpHandler {
         HttpRequestValidatorUtils.checkContainsAllRequiredParams(ApiSettings.ENTITY_ENDPOINT, params);
 
         String key = params.get(ID);
+
+        String auditMessage = String.join(
+                FileStorageDao.AUDIT_SEPARATOR,
+                exchange.getRequestMethod(), key, getCurrentTime()
+        );
+        if (auditableKVService == null) {
+            auditableKVService = new AuditableKVServiceImpl(exchange.getLocalAddress().getPort());
+        }
+        auditableKVService.send(AuditServiceImpl.AUDIT_TOPIC, auditMessage);
 
         if (KVShardingClusterImpl.isShardingEnabled()) {
             UUID targetUid = RendezvousHashing.getCorrespondingUid(key, KVShardingClusterImpl.getShardKeys());
@@ -120,5 +134,9 @@ public class EntityEndpointHandler implements HttpHandler {
 
             default -> throw new UnsupportedOperationException();
         }
+    }
+
+    private String getCurrentTime() {
+        return String.valueOf(Instant.now().toEpochMilli());
     }
 }
