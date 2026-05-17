@@ -10,18 +10,18 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class AuditableKVServiceImpl extends HttpKVService implements AuditableKVService {
     private static final Logger log = Logger.getLogger(AuditableKVServiceImpl.class.getName());
     private KafkaProducer<String, String> producer;
-    private Properties props;
-    private boolean async;
+    private final AtomicBoolean async;
 
     public AuditableKVServiceImpl(int port) throws IOException {
         super(port);
-        this.props = new Properties();
+        this.async = new AtomicBoolean(false);
     }
 
     @Override
@@ -31,16 +31,15 @@ public class AuditableKVServiceImpl extends HttpKVService implements AuditableKV
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        this.props = properties;
         if (producer != null) {
             producer.close();
         }
-        this.producer = new KafkaProducer<>(props);
+        this.producer = new KafkaProducer<>(properties);
     }
 
     @Override
     public void setAsync(boolean enabled) {
-        this.async = enabled;
+        this.async.set(enabled);
     }
 
     @Override
@@ -63,7 +62,7 @@ public class AuditableKVServiceImpl extends HttpKVService implements AuditableKV
                 }
             }
         });
-        if (!async) {
+        if (!async.get()) {
             try {
                 future.get();
             } catch (ExecutionException | InterruptedException e) {

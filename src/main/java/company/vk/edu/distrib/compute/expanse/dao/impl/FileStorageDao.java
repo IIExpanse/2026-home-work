@@ -5,9 +5,9 @@ import company.vk.edu.distrib.compute.expanse.exception.ServerInstantiationExcep
 import company.vk.edu.distrib.compute.expanse.exception.StorageException;
 import company.vk.edu.distrib.compute.expanse.utils.ExceptionUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -73,7 +73,7 @@ public class FileStorageDao implements Dao<byte[]> {
             return Arrays.stream(Objects.requireNonNull(new File(STORAGE_DIRECTORY).listFiles()))
                     .filter(file -> file.getName().startsWith(prefix))
                     .map(file -> {
-                        try (FileReader reader = new FileReader(file)) {
+                        try (BufferedReader reader = Files.newBufferedReader(file.toPath())) {
                             return reader.readAllAsString();
                         } catch (FileNotFoundException e) {
                             throw new NoSuchElementException(e);

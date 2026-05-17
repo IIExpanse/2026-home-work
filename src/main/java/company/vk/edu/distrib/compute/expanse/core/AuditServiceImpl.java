@@ -16,6 +16,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
@@ -30,7 +31,7 @@ public class AuditServiceImpl implements AuditService {
     private String consumerGroup = DEFAULT_CONSUMER_GROUP;
     private final Lock lock;
     private final String clientId;
-    private volatile boolean isRunning;
+    private final AtomicBoolean isRunning;
     private Properties props;
     private Thread thread;
     private static int instanceCount;
@@ -39,6 +40,7 @@ public class AuditServiceImpl implements AuditService {
         this.lock = new ReentrantLock();
         this.props = new Properties();
         this.clientId = "audit-reader-" + instanceCount++;
+        this.isRunning = new AtomicBoolean(false);
     }
 
     @Override
@@ -52,16 +54,16 @@ public class AuditServiceImpl implements AuditService {
 
         try {
             lock.lock();
-            if (isRunning) {
+            if (!isRunning.get()) {
                 return;
             }
-            isRunning = true;
+            isRunning.set(true);
             thread = new Thread(() -> {
                 try (KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props)) {
 
                     consumer.subscribe(Collections.singletonList(AUDIT_TOPIC));
 
-                    while (isRunning) {
+                    while (isRunning.get()) {
                         ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(10));
                         try (Dao<byte[]> dao = new FileStorageDao()) {
                             for (ConsumerRecord<String, String> consumerRecord : records) {
@@ -91,8 +93,8 @@ public class AuditServiceImpl implements AuditService {
         try {
             lock.lock();
             log.info("Stopping audit reader");
-            if (isRunning) {
-                isRunning = false;
+            if (isRunning.get()) {
+                isRunning.set(false);
                 thread.join();
             }
 
@@ -107,7 +109,7 @@ public class AuditServiceImpl implements AuditService {
 
     @Override
     public List<AuditEvent> listAuditEntries() {
-        if (!isRunning) {
+        if (!isRunning.get()) {
             return Collections.emptyList();
         }
         try (FileStorageDao dao = new FileStorageDao()) {
