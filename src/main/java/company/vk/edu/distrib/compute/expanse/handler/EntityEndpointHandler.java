@@ -56,7 +56,7 @@ public class EntityEndpointHandler implements HttpHandler {
                 exchange.getRequestMethod(), key, getCurrentTime()
         );
         if (auditableKVService == null) {
-            auditableKVService = new AuditableKVServiceImpl(exchange.getLocalAddress().getPort());
+            auditableKVService = AppContextUtils.getBean(AuditableKVServiceImpl.class);
         }
         auditableKVService.send(AuditServiceImpl.AUDIT_TOPIC, auditMessage);
 
